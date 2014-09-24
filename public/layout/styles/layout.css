@@ -1,13 +1,4 @@
 @charset "utf-8";
-/*
-Template Name: Illusion
-Author: <a href="http://www.os-templates.com/">OS Templates</a>
-Author URI: http://www.os-templates.com/
-Licence: Free to use under our free template licence terms
-Licence URI: http://www.os-templates.com/template-terms
-File: Layout CSS
-*/
-
 @import url("../scripts/supersized/supersized.custom.css");
 @import url("fontawesome-3.2.1.min.css");
 @import url("framework.css");
@@ -15,7 +6,7 @@ File: Layout CSS
 
 /* Rows
 ---------------------------------------------------------------------------------------------------------------*/
-.row0{-moz-border-radius:; -webkit-border-radius:; border-radius:25px 25px 0 0;}
+.row0{-moz-border-radius: 25px 25px 0 0; -webkit-border-radius: 25px 25px 0 0; border-radius: 25px 25px 0 0;}
 .row1, .row1 a{}
 .row2, .row2 a{}
 .row3, .row3 a{}
@@ -176,8 +167,8 @@ td{border-width:0 1px;}
 
 /* Colours
 ---------------------------------------------------------------------------------------------------------------*/
-body{color:#FFFFFF; background-color:#000000;}
-
+body{color:#FFFFFF; background-color:#000000; }
+body#top{background-image: url("../../images/demo/backgrounds/background_1.jpg");}
 a{color:#56AED4;}
 
 hr, .borderedbox{border-color:#B7B7B7;}

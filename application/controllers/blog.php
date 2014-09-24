@@ -1,4 +1,4 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
  * Created by PhpStorm.
@@ -6,28 +6,25 @@
  * Date: 8/25/14
  * Time: 3:07 PM
  */
-class Blog extends CI_Controller {
+class Blog extends CI_Controller
+{
+    private $_data;
 
-    public function __construct(){
+    public function __construct()
+    {
         parent::__construct();
         $this->load->model('group_m');
+        $this->_data = array();
     }
 
     public function index()
     {
-        $data = array(
-            'blog_title'   => 'My Blog Title',
-            'blog_heading' => 'My Blog Heading',
-            'blog_entries' => array(
-                array('title' => 'Title 1', 'body' => 'Body 1'),
-                array('title' => 'Title 2', 'body' => 'Body 2'),
-                array('title' => 'Title 3', 'body' => 'Body 3')
-            )
-        );
-        $this->parser->parse('blog/index', $data);
+
+
+
+        $this->_data['title'] = 'FRAMGIA & ASCEND';
+        $this->_data['show_slider'] = true;
+        $this->layout->view('blog/index', $this->_data);
     }
 
 }
-
-/* End of file welcome.php */
-/* Location: ./application/controllers/welcome.php */
