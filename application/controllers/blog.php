@@ -19,9 +19,6 @@ class Blog extends CI_Controller
 
     public function index()
     {
-
-
-
         $this->_data['title'] = 'FRAMGIA & ASCEND';
         $this->_data['show_slider'] = true;
         $this->layout->view('blog/index', $this->_data);
