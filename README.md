@@ -7,6 +7,11 @@
 * [License](http://192.168.0.18/research/)
 * Version: 2.2.3
 
+## Miêu tả:
+    "A Controller is simply a class file that is named in a way that can be associated with a URI.
+    Consider this URI: example.com/index.php/blog/
+    In the above example, CodeIgniter would attempt to find a controller named blog.php and load it."
+
 ## Code model My_Model để cho model kế thừa sử dụng lại sau này, một sô function cơ bản trong class My_Model
     /**
      *
@@ -252,6 +257,12 @@
 * [Documentation](http://192.168.0.18/research/)
 * [License](http://192.168.0.18/research/)
 * Version: 2.2.3
+
+## Miêu tả:
+    1. The Template Parser Class enables you to parse pseudo-variables contained within your view files.
+    2. It can parse simple variables or variable tag pairs.
+    3. If you've never used a template engine, pseudo-variables look like this:
+
 
 ## Cơ bản những đoạn code chủ chốt trong commit
     1. Dùng để load metadata muốn import vào trang
