@@ -1,3 +1,79 @@
+# Ticket 20609: Research for Caching in CI - Part 1 + Part 2
+[![Build Status](http://192.168.0.18/research/)]
+
+* [Website](https://www.framgia.com/)
+* [Documentation](http://192.168.0.18/research/)
+* [License](http://192.168.0.18/research/)
+* Version: 2.2.4
+
+## Web caching là gì ?
+    Web caching là việc lưu trữ bản sao của những tài liệu web sao cho gần với người dùng,
+    cả về mặt chức năng trong web client hoặc những web caching servers riêng biệt.
+
+## Ưu điểm chính của Web caching là gì ?
+    Ưu điểm chính: Giảm tải băng thông chiếm dụng bởi client, giữ cho các như cầu về băng thông hạ xuống và dễ dàng quản lý (tiết kiệm chi phí mua băng thông).
+    Thứ 2 là giảm tải cho server, thứ 3 việc truy cập vào website để lấy dữ liệu tốc độ truy xuất sẽ nhanh hơn.
+
+## Có mấy loại Web caching chính ?
+    Có 3 loại cache chính là: Browser Cache, Proxy Cache, Gateway Cache
+
+## Làm thế nào để sử dụng được Webcaching trong CI ?
+    Để sử được caching chúng ta phải khai báo thư viện:
+    $this->load->driver('cache');
+
+## Sử dụng Webcaching trong CI như thế nào ?
+    Sử dụng caching trong CI:
+    + Sử dụng driver bằng cách khai báo:
+        $this->load->driver('cache', array('adapter' => 'apc', 'backup' => 'file'));
+
+    + Lưu giá trị vào cache:
+        $this->cache->save('test', 'this is value', 300); //300 là thời gian lưu trữ (= 5 phút)
+
+    + Lấy về giá trị đã lưu trữ vào cache:
+        $test = $this->cache->get('test');
+
+    + Kiểm tra hosting có support caching hay không:
+        $this->cache->apc->is_supported(); //Trả về true or false
+
+    + Xóa 1 giá trị đã lưu vào cache thông qua key
+        $this->cache->delete('cache_item_id');
+
+    + Làm sạch toàn bộ dữ liệu đã được lưu và cache
+        $this->cache->clean(); //mặc định function sẽ trả về false
+
+    + Lấy về thông tin của cache
+        $this->cache->cache_info();
+
+    + Lấy về thông tin mở rộng (metadata) của cache
+        $this->cache->get_metadata('my_cached_item');
+
+    + Đối với Memcached Caching cách làm cũng tương tự:
+        //Lưu trữ dữ liệu vào cache thông qua key
+        $this->cache->memcached->save('test', 'this is value', 300);
+
+    + Caching đối với file:
+        $this->cache->file->save('key', 'value', 300);
+
+## Lưu ý khi sử dụng Webcaching trong CI ?
+    + Nếu bạn muốn sử dụng caching toàn bộ controller thì sử dụng câu lệnh:
+        $this->output->cache();
+
+    + Thư mục lưu trữ cache trong CI là "system/cache" và để website có thể sử dụng được thì folder phải có quyền ghi.
+        VD: mã quyền 0777
+
+## Tổng quan
+    Web caching là việc lưu trữ bản sao của những tài liệu web sao cho gần với người dùng,
+    cả về mặt chức năng trong web client hoặc những web caching servers riêng biệt.
+    Những mạng lưới web cache là việc kết hợp các servers với nhau thành một tổ chức mạng lưới Web caching đa cấp độ.
+
+
+
+
+
+
+
+
+
 # Ticket 18660: Research about Controllers of CI Framework - Part 1
 
 [![Build Status](http://192.168.0.18/research/)]
