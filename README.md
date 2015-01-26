@@ -1,3 +1,199 @@
+# Ticket 24804: Research for Image Manipulation Of CodeIgniter Framework - Part 1 + Part 2
+
+[![Build Status](http://192.168.0.18/research/)]
+
+* [Website](https://www.framgia.com/)
+* [Documentation](http://192.168.0.18/research/)
+* [License](http://192.168.0.18/research/)
+* Version: 2.2.6
+
+1. Image Manipulation là gì ?
+    Image Manipulation là một thư viện ảnh và được cả 3 thư viện ảnh lớn GD/GD2, NetPBM và ImageMagick support.
+    Nó giúp bạn dễ dàng thao tác với những file ảnh, những công việc Resizing, Cropping, Rotating ... trở lên
+    dễ dàng hơn rất nhiều. Image Manipulation bao gồm 5 thành phần chính là:
+        + Image Resizing
+        + Thumbnail Creation
+        + Image Cropping
+        + Image Rotating
+        + Image Watermarking
+
+    Lưu ý: Hiện nay thì Watermarking làm việc ổn định nhất trên thư viện GD/GD2
+
+2. Làm thế nào để sử dụng Image Manipulation ?
+
+    Image Manipulation cũng giống như những thư viện khác trong CI, trước khi dùng cần dược khai báo để hệ thông
+    có thể tải về những class cần thiết trước khi dùng, cú pháp khai báo giống hệt với những cú pháp load những
+    thư viện khác:
+
+    $this->load->library('image_lib');
+
+    Sau khi load thư viện thì toàn bộ những function trong thư viện sẽ được nạp vào hệ thống đang chạy và chúng ta
+    có thể dễ dàng truy xuất thông qua cách gọi: $this->image_lib->abc();
+
+    abc() là tên function người dùng muốn gọi tron gói thư viện "image_lib"
+
+    image_lib cung cấp khá đầy đủ những function để thao tác xử lý những yêu cầu thường gặp phải như thay đổi kích
+    thước, cắt ảnh, xoay chiều hoặc đóng đấu, để sử dụng chắc năng resize chúng ta sử dụng như sau:
+
+    $config['image_library'] = 'gd2';
+    $config['source_image']	= '/path/to/image/mypic.jpg';
+    $config['create_thumb'] = TRUE;
+    $config['maintain_ratio'] = TRUE;
+    $config['width']	= 75;
+    $config['height']	= 50;
+    //Thiết lập config trước khi khởi tạo thư viện
+
+    $this->load->library('image_lib', $config);
+    //Load thư viện với thông số config truyền vào. Chúng ta có thể truyền param config vào sau khi
+    //load thư viện
+
+    $this->image_lib->resize();
+    //Sử dụng function resize() để xử lý chức năng thay đổi kích thước file ảnh
+
+    Trên đây là 1 ví dụ rất đơn giản để xử lý việc resize kích thước ảnh.
+
+    Ngoài ra nó còn support những function sau:
+    $this->image_lib->crop()
+    //Hỗ trợ crop file ảnh
+
+    $this->image_lib->rotate()
+    //Hỗ trợ xoay ảnh
+
+    $this->image_lib->watermark()
+    //Hỗ trợ đóng dấu vào ảnh
+
+    $this->image_lib->clear()
+    //Xóa toàn bộ những config hiện tại
+
+
+    Theo mặc định thì khi gọi hàm xử lý kết quả trả về kiểu dữ liệu boolean (true or false)
+    if ( ! $this->image_lib->resize()){
+        echo $this->image_lib->display_errors();
+    }
+
+    Trong trường hợp có lỗi thì thông tin liên quan đến lỗi sẽ tồn tại trong function:
+    $this->image_lib->display_errors()
+
+
+    * Ưu - nhược điểm ?
+        - Ưu điểm:
+             + Cú pháp dễ gọi, việc config khá dễ dàng thông array lúc load thư viện
+             + Thư viện được viết dựa trên những plugin cài có sẵn trên những server hiện nay như: GD/GD2, NetPBM , ImageMagick...
+             + Được viết lại và loại bỏ đi một số thành phần không cần thiết nên thư viện rất nhẹ. Khi bạn dùng thư viện thường thì ngay lúc khai báo
+                image file được load luôn vào hệ thống, còn đối với image_lib thì khi nào dùng đến mới được load chứ không load luôn lúc khai báo
+             + Hỗ trợ việc lưu resoure vào cache chính vì thế rất phù hợp với việc xử lý nhiều dữ liệu cùng một lúc, hạn chế chiếm tài nguyên của hệ thống
+             + Hỗ trợ việc chuyển đổi, config tùy theo từng server support
+
+        - Nhược điểm:
+             + Watermarking hiện tại chỉ mới chạy ổn định trên GD/GD2
+             + Còn hạn chế một số định dạng file đầu vào
+             + Vẫn còn phải config khá nhiều trước khi gọi hàm xử lý
+             + Một số loại font vẫn chưa hỗ trợ
+             + Chất lượng ảnh vẫn không giữ được 100% sau khi convert (có thể chấp nhận được, vì giảm xuống không đáng kể)
+
+
+3. Tùy chọn:
+
+    Xin được trích dẫn nguyên bản, thông tin Preferences do tác giả đưa lên:
+
+    + Tùy chọn cho xử lý đóng dấu ảnh:
+
+        Preference	        Default Value	Options	Description
+        wm_type	            text	        text, overlay	Sets the type of watermarking that should be used.
+        source_image	    None	        None	Sets the source image name/path. The path must be a relative or absolute server path, not a URL.
+        dynamic_output	    FALSE	        TRUE/FALSE (boolean)	Determines whether the new image file should be written to disk or generated dynamically. Note: If you choose the dynamic setting, only one image can be shown at a time, and it can't be positioned on the page. It simply outputs the raw image dynamically to your browser, along with image headers.
+        quality	            90%	            1 - 100%	Sets the quality of the image. The higher the quality the larger the file size.
+        padding	            None	        A number	The amount of padding, set in pixels, that will be applied to the watermark to set it away from the edge of your images.
+        wm_vrt_alignment	bottom	        top, middle, bottom	Sets the vertical alignment for the watermark image.
+        wm_hor_alignment	center	        left, center, right	Sets the horizontal alignment for the watermark image.
+        wm_hor_offset	    None	        None	You may specify a horizontal offset (in pixels) to apply to the watermark position. The offset normally moves the watermark to the right, except if you have your alignment set to "right" then your offset value will move the watermark toward the left of the image.
+        wm_vrt_offset	    None	        None	You may specify a vertical offset (in pixels) to apply to the watermark position. The offset normally moves the watermark down, except if you have your alignment set to "bottom" then your offset value will move the watermark toward the top of the image.
+
+
+    + Tùy chọn liên quan đến Text
+
+        Preference	        Default Value	Options	Description
+        wm_text	None	    None	        The text you would like shown as the watermark. Typically this will be a copyright notice.
+        wm_font_path	    None	        None	The server path to the True Type Font you would like to use. If you do not use this option, the native GD font will be used.
+        wm_font_size	    16	            None	The size of the text. Note: If you are not using the True Type option above, the number is set using a range of 1 - 5. Otherwise, you can use any valid pixel size for the font you're using.
+        wm_font_color	    ffffff	        None	The font color, specified in hex. Note, you must use the full 6 character hex value (ie, 993300), rather than the three character abbreviated version (ie fff).
+        wm_shadow_color	    None	        None	The color of the drop shadow, specified in hex. If you leave this blank a drop shadow will not be used. Note, you must use the full 6 character hex value (ie, 993300), rather than the three character abbreviated version (ie fff).
+        wm_shadow_distance	3	            None	The distance (in pixels) from the font that the drop shadow should appear.
+
+
+    + Liên quan đến che phủ ảnh
+
+        Preference	        Default Value	Options	Description
+        wm_overlay_path	    None	        None	The server path to the image you wish to use as your watermark. Required only if you are using the overlay method.
+        wm_opacity	        50	            1 - 100	Image opacity. You may specify the opacity (i.e. transparency) of your watermark image. This allows the watermark to be faint and not completely obscure the details from the original image behind it. A 50% opacity is typical.
+        wm_x_transp	        4	            A number	If your watermark image is a PNG or GIF image, you may specify a color on the image to be "transparent". This setting (along with the next) will allow you to specify that color. This works by specifying the "X" and "Y" coordinate pixel (measured from the upper left) within the image that corresponds to a pixel representative of the color you want to be transparent.
+        wm_y_transp	        4	            A number	Along with the previous setting, this allows you to specify the coordinate to a pixel representative of the color you want to be transparent.
+
+4. Ví dụ:
+
+   //Cơ bản:
+   $config['image_library'] = 'gd2';
+   $config['source_image']	= '/path/to/image/mypic.jpg';
+   $config['create_thumb'] = TRUE;
+   $config['maintain_ratio'] = TRUE;
+   $config['width']	= 75;
+   $config['height']	= 50;
+   $this->load->library('image_lib', $config);
+   $this->image_lib->resize();
+
+
+    //Ví dụ có báo lỗi
+    $config['image_library'] = 'imagemagick';
+    $config['library_path'] = '/usr/X11R6/bin/';
+    $config['source_image']	= '/path/to/image/mypic.jpg';
+    $config['x_axis'] = '100';
+    $config['y_axis'] = '60';
+
+    $this->image_lib->initialize($config);
+
+    if ( ! $this->image_lib->crop())
+    {
+        echo $this->image_lib->display_errors();
+    }
+
+
+    //Liên quan đến rotate()
+    $config['image_library'] = 'netpbm';
+    $config['library_path'] = '/usr/bin/';
+    $config['source_image']	= '/path/to/image/mypic.jpg';
+    $config['rotation_angle'] = 'hor';
+
+    $this->image_lib->initialize($config);
+
+    if ( ! $this->image_lib->rotate())
+    {
+        echo $this->image_lib->display_errors();
+    }
+
+
+    //Đóng dấu ảnh
+    $config['source_image']	= '/path/to/image/mypic.jpg';
+    $config['wm_text'] = 'Copyright 2006 - John Doe';
+    $config['wm_type'] = 'text';
+    $config['wm_font_path'] = './system/fonts/texb.ttf';
+    $config['wm_font_size']	= '16';
+    $config['wm_font_color'] = 'ffffff';
+    $config['wm_vrt_alignment'] = 'bottom';
+    $config['wm_hor_alignment'] = 'center';
+    $config['wm_padding'] = '20';
+
+    $this->image_lib->initialize($config);
+
+    $this->image_lib->watermark();
+
+
+
+
+
+
+
+
+
 # Ticket 22376: Research for Form Validation Of CI - Part 1 + Part 2
 
 [![Build Status](http://192.168.0.18/research/)]
