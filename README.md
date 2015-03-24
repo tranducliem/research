@@ -1,3 +1,273 @@
+# Ticket 27098: Research for "File Uploading Class" and "HTML Table Class" Of CodeIgniter Framework
+[![Build Status](http://192.168.0.18/research/)]
+
+* [Website](https://www.framgia.com/)
+* [Documentation](http://192.168.0.18/research/)
+* [License](http://192.168.0.18/research/)
+* Version: 2.2.7
+
+## "File Uploading Class" là gì ?
+* File Uploading Class là một thư viện PHP được xây dựng sẵn trong CI mục đích là để support việc thao tác với các file upload, 
+giúp thiết lập các tùy chọn, hạn chế loại file, kích thước... trở nên dễ dàng hơn.
+* File Uploading Class thao tác với các tệp tin được gửi từ client lên server, nó xử lý trực tiếp trên server, có thể ngăn chặn
+những file không hợp lệ được upload lên server theo tùy chọn của bạn.
+
+## Làm thế nào để sử dụng "File Uploading Class"
+
+- Ở đây chúng ta sẽ xây dựng một form đơn giản có chức năng upload sử dụng view của CI:
+
+<html>
+<head>
+<title>Upload Form</title>
+</head>
+<body>
+
+<?php echo $error;?>
+
+<?php echo form_open_multipart('upload/do_upload');?>
+
+<input type="file" name="userfile" size="20" />
+
+<br /><br />
+
+<input type="submit" value="upload" />
+
+</form>
+
+</body>
+</html>
+
+ở đây tôi sử dụng form_open_multipart trong CI để dưng view bản chất không khác gì với form_open ngoài việc sinh ra thêm
+một thuộc tính nữa của form là enctype="multipart/form-data". Nếu như không có thuộc tính enctype thì file sẽ không thể
+upload lên server được vì thuộc tính đó quy định cụ thể kiểu mã hóa cho dữ liệu khi được submit lên server. Lưu ý thuộc tính
+enctype chỉ sử dụng với method là post không dùng được với get.
+
+- Phía server chúng ta sẽ xử lý như sau:
+Để sử dụng được thư viện File Uploading Class thì phải include thư viện vào:
+dùng lệnh sau để thực hiện nhiệm: $this->load->library('upload', $config);
+
+$config là phần thiết lập những thông số:
+một số thiết lập thường dùng:
+        $config['upload_path'] = './uploads/';
+        Thiết lập đường dẫn đến forder lưu file upload
+        
+		$config['allowed_types'] = 'gif|jpg|png';
+		Loại file hợp lệ khi upload lên server
+		
+		$config['max_size']	= '100';
+		Kích thước file tối đa của một file khi upload lên
+		
+		$config['max_width']  = '1024';
+		Kích thước chiều rộng tối đa khi upload file (chỉ hợp lệ khi upload file ảnh)
+		
+		$config['max_height']  = '768';
+		Kích thước chiều dài tối đa khi upload file (chỉ hợp lệ khi upload file ảnh)
+        
+        
+- Sau khi thiết lập các paramater chúng ta dùng function do_upload() để thực hiện việc upload.
+    có thể gọi nhanh bằng câu lệnh: 
+    $this->upload->do_upload()
+    
+    function do_upload() trả về kiểu dữ liệu boolean.
+    
+- Trong quá trình upload thì toàn bộ lỗi sẽ được trả về thông qua function display_errors()
+    $this->upload->display_errors()
+    
+    function display_errors() trả về message lỗi kiểu string
+    
+- Sau khi upload thành công thì thông tin meta (ten, loại file, dung lượng...) sẽ được trả về
+    khi gọi function data()
+    $this->upload->data()
+    
+    function $this->upload->data() sẽ trả về array có key tương ứng (name, size, width...)
+    
+
+- Code đầy đủ thì bạn có thể tham khảo:
+    <?php
+    class Upload extends CI_Controller {
+    
+    	function __construct()
+    	{
+    		parent::__construct();
+    		$this->load->helper(array('form', 'url'));
+    	}
+    
+    	function index()
+    	{
+    		$this->load->view('upload_form', array('error' => ' ' ));
+    	}
+    
+    	function do_upload()
+    	{
+    		$config['upload_path'] = './uploads/';
+    		$config['allowed_types'] = 'gif|jpg|png';
+    		$config['max_size']	= '100';
+    		$config['max_width']  = '1024';
+    		$config['max_height']  = '768';
+    
+    		$this->load->library('upload', $config);
+    
+    		if ( ! $this->upload->do_upload())
+    		{
+    			$error = array('error' => $this->upload->display_errors());
+    
+    			$this->load->view('upload_form', $error);
+    		}
+    		else
+    		{
+    			$data = array('upload_data' => $this->upload->data());
+    
+    			$this->load->view('upload_success', $data);
+    		}
+    	}
+    }
+    ?>
+    
+    
+    ngoài cách khai báo config lức include thư viện ra thì còn có thể import config sau khi include thư viện:
+    $config['upload_path'] = './uploads/';
+    $config['allowed_types'] = 'gif|jpg|png';
+    $config['max_size']	= '100';
+    $config['max_width'] = '1024';
+    $config['max_height'] = '768';
+    
+    $this->load->library('upload');
+    //Load thư viện
+    $this->upload->initialize($config);
+    //Thiết lập config param
+    
+    
+## Preferences ?
+    
+    Một số thông tin config hay sử dụng khi dùng File Uploading Class.
+    \begin{table}[h]
+    \begin{tabular}{llll}
+    Preference                                                                                                                                & Default Value & Options              & Description                                                                                                                                                                                                \\
+    upload\_path                                                                                                                              & None          & None                 & The path to the folder where the upload should be placed. The folder must be writable and the path can be absolute or relative.                                                                            \\
+    allowed\_types                                                                                                                            & None          & None                 & The mime types corresponding to the types of files you allow to be uploaded. Usually the file extension can be used as the mime type. Separate multiple types with a pipe.                                 \\
+    file\_name                                                                                                                                & None          & Desired file name    &                                                                                                                                                                                                            \\
+    If set CodeIgniter will rename the uploaded file to this name. The extension provided in the file name must also be an allowed file type. &               &                      &                                                                                                                                                                                                            \\
+                                                                                                                                              &               &                      &                                                                                                                                                                                                            \\
+    overwrite                                                                                                                                 & FALSE         & TRUE/FALSE (boolean) & If set to true, if a file with the same name as the one you are uploading exists, it will be overwritten. If set to false, a number will be appended to the filename if another with the same name exists. \\
+    max\_size                                                                                                                                 & 0             & None                 & The maximum size (in kilobytes) that the file can be. Set to zero for no limit. Note: Most PHP installations have their own limit, as specified in the php.ini file. Usually 2 MB (or 2048 KB) by default. \\
+    max\_width                                                                                                                                & 0             & None                 & The maximum width (in pixels) that the file can be. Set to zero for no limit.                                                                                                                              \\
+    max\_height                                                                                                                               & 0             & None                 & The maximum height (in pixels) that the file can be. Set to zero for no limit.                                                                                                                             \\
+    max\_filename                                                                                                                             & 0             & None                 & The maximum length that a file name can be. Set to zero for no limit.                                                                                                                                      \\
+    encrypt\_name                                                                                                                             & FALSE         & TRUE/FALSE (boolean) & If set to TRUE the file name will be converted to a random encrypted string. This can be useful if you would like the file saved with a name that can not be discerned by the person uploading it.         \\
+    remove\_spaces                                                                                                                            & TRUE          & TRUE/FALSE (boolean) & If set to TRUE, any spaces in the file name will be converted to underscores. This is recommended.                                                                                                        
+    \end{tabular}
+    \end{table}
+    
+    
+    
+    
+    \begin{table}[h]
+    \begin{tabular}{ll}
+    Item             & Description                                                                                             \\
+    file\_name       & The name of the file that was uploaded including the file extension.                                    \\
+    file\_type       & The file's Mime type                                                                                    \\
+    file\_path       & The absolute server path to the file                                                                    \\
+    full\_path       & The absolute server path including the file name                                                        \\
+    raw\_name        & The file name without the extension                                                                     \\
+    orig\_name       & The original file name. This is only useful if you use the encrypted name option.                       \\
+    client\_name     & The file name as supplied by the client user agent, prior to any file name preparation or incrementing. \\
+    file\_ext        & The file extension with period                                                                          \\
+    file\_size       & The file size in kilobytes                                                                              \\
+    is\_image        & Whether the file is an image or not. 1 = image. 0 = not.                                                \\
+    image\_width     & Image width.                                                                                            \\
+    image\_height    & Image height                                                                                            \\
+    image\_type      & Image type. Typically the file extension without the period.                                            \\
+    image\_size\_str & A string containing the width and height. Useful to put into an image tag.                             
+    \end{tabular}
+    \end{table}
+    
+    
+## Tổng hợp ví dụ:
+
+    <html>
+    <head>
+    <title>Upload Form</title>
+    </head>
+    <body>
+    
+    <?php echo $error;?>
+    
+    <?php echo form_open_multipart('upload/do_upload');?>
+    
+    <input type="file" name="userfile" size="20" />
+    
+    <br /><br />
+    
+    <input type="submit" value="upload" />
+    
+    </form>
+    
+    </body>
+    </html>
+
+
+    <?php
+    class Upload extends CI_Controller {
+    	function __construct()
+    	{
+    		parent::__construct();
+    		$this->load->helper(array('form', 'url'));
+    	}
+    
+    	function index()
+    	{
+    		$this->load->view('upload_form', array('error' => ' ' ));
+    	}
+    
+    	function do_upload()
+    	{
+    		$config['upload_path'] = './uploads/';
+    		$config['allowed_types'] = 'gif|jpg|png';
+    		$config['max_size']	= '100';
+    		$config['max_width']  = '1024';
+    		$config['max_height']  = '768';
+    
+    		$this->load->library('upload', $config);
+    
+    		if ( ! $this->upload->do_upload())
+    		{
+    			$error = array('error' => $this->upload->display_errors());
+    
+    			$this->load->view('upload_form', $error);
+    		}
+    		else
+    		{
+    			$data = array('upload_data' => $this->upload->data());
+    
+    			$this->load->view('upload_success', $data);
+    		}
+    	}
+    }
+    ?>
+    
+    
+    
+    //Kết quả:
+    Array
+    (
+        [file_name]    => mypic.jpg
+        [file_type]    => image/jpeg
+        [file_path]    => /path/to/your/upload/
+        [full_path]    => /path/to/your/upload/jpg.jpg
+        [raw_name]     => mypic
+        [orig_name]    => mypic.jpg
+        [client_name]  => mypic.jpg
+        [file_ext]     => .jpg
+        [file_size]    => 22.2
+        [is_image]     => 1
+        [image_width]  => 800
+        [image_height] => 600
+        [image_type]   => jpeg
+        [image_size_str] => width="800" height="200"
+    )
+
+    
+
 # Ticket 24804: Research for Image Manipulation Of CodeIgniter Framework - Part 1 + Part 2
 
 [![Build Status](http://192.168.0.18/research/)]
@@ -224,23 +494,24 @@ $this->form_validation->set_message('valid_email', $this->lang->line('invalid-em
 $this->form_validation->set_message('matches', $this->lang->line('matches'));
 
 + Form dữ liệu bên phái client hoàn toàn dùng các thẻ HTML như các form bình thường khác:
-<form id="RegisterForm" action="localhost/liemdemo/register" method="post">
 
-<h5>Username</h5>
-<input type="text" name="username" value="" size="50" />
+> <form id="RegisterForm" action="localhost/liemdemo/register" method="post">
 
-<h5>Password</h5>
-<input type="text" name="password" value="" size="50" />
+> <h5>Username</h5>
+> <input type="text" name="username" value="" size="50" />
 
-<h5>Password Confirm</h5>
-<input type="text" name="passconf" value="" size="50" />
+> <h5>Password</h5>
+> <input type="text" name="password" value="" size="50" />
 
-<h5>Email Address</h5>
-<input type="text" name="email" value="" size="50" />
+> <h5>Password Confirm</h5>
+> <input type="text" name="passconf" value="" size="50" />
 
-<div><input type="submit" value="Submit" /></div>
+> <h5>Email Address</h5>
+> <input type="text" name="email" value="" size="50" />
 
-</form>
+> <div><input type="submit" value="Submit" /></div>
+
+> </form>
 
 + Để hiển thị tin nhắn thông báo cho người dùng thì chúng ta sử dụng
 <?php echo validation_errors(); ?>
