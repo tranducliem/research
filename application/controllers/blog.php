@@ -24,6 +24,87 @@ class Blog extends CI_Controller
         $this->layout->view('blog/index', $this->_data);
     }
 
+    public function uploading(){
+        $this->load->helper(array('form', 'url'));
+
+        $this->load->library('form_validation');
+
+        $this->form_validation->set_rules('username', 'Username', 'callback_username_check');
+        $this->form_validation->set_rules('password', 'Password', 'required');
+        $this->form_validation->set_rules('passconf', 'Password Confirmation', 'required');
+        $this->form_validation->set_rules('email', 'Email', 'required|is_unique[users.email]');
+
+        $config = array(
+            'signup' => array(
+                array(
+                    'field' => 'username',
+                    'label' => 'Username',
+                    'rules' => 'required'
+                ),
+                array(
+                    'field' => 'password',
+                    'label' => 'Password',
+                    'rules' => 'required'
+                ),
+                array(
+                    'field' => 'passconf',
+                    'label' => 'PasswordConfirmation',
+                    'rules' => 'required'
+                ),
+                array(
+                    'field' => 'email',
+                    'label' => 'Email',
+                    'rules' => 'required'
+                )
+            ),
+            'email' => array(
+                array(
+                    'field' => 'emailaddress',
+                    'label' => 'EmailAddress',
+                    'rules' => 'required|valid_email'
+                ),
+                array(
+                    'field' => 'name',
+                    'label' => 'Name',
+                    'rules' => 'required|alpha'
+                ),
+                array(
+                    'field' => 'title',
+                    'label' => 'Title',
+                    'rules' => 'required'
+                ),
+                array(
+                    'field' => 'message',
+                    'label' => 'MessageBody',
+                    'rules' => 'required'
+                )
+            )
+        );
+
+        if ($this->form_validation->run() == FALSE)
+        {
+            $this->load->view('myform');
+        }
+        else
+        {
+            $this->load->view('formsuccess');
+        }
+    }
+
+
+    public function genTest($str)
+    {
+        if ($str == 'test')
+        {
+            $this->form_validation->set_message('username_check', 'The %s field can not be the word "test"');
+            return FALSE;
+        }
+        else
+        {
+            return TRUE;
+        }
+    }
+
     public function add(){
         $this->load->helper(array('form', 'url'));
         $this->load->library('form_validation');
@@ -128,6 +209,87 @@ class Blog extends CI_Controller
 
 
     public function username_check($str)
+    {
+        if ($str == 'test')
+        {
+            $this->form_validation->set_message('username_check', 'The %s field can not be the word "test"');
+            return FALSE;
+        }
+        else
+        {
+            return TRUE;
+        }
+    }
+
+    public function showTable(){
+        $this->load->helper(array('form', 'url'));
+
+        $this->load->library('form_validation');
+
+        $this->form_validation->set_rules('username', 'Username', 'callback_username_check');
+        $this->form_validation->set_rules('password', 'Password', 'required');
+        $this->form_validation->set_rules('passconf', 'Password Confirmation', 'required');
+        $this->form_validation->set_rules('email', 'Email', 'required|is_unique[users.email]');
+
+        $config = array(
+            'signup' => array(
+                array(
+                    'field' => 'username',
+                    'label' => 'Username',
+                    'rules' => 'required'
+                ),
+                array(
+                    'field' => 'password',
+                    'label' => 'Password',
+                    'rules' => 'required'
+                ),
+                array(
+                    'field' => 'passconf',
+                    'label' => 'PasswordConfirmation',
+                    'rules' => 'required'
+                ),
+                array(
+                    'field' => 'email',
+                    'label' => 'Email',
+                    'rules' => 'required'
+                )
+            ),
+            'email' => array(
+                array(
+                    'field' => 'emailaddress',
+                    'label' => 'EmailAddress',
+                    'rules' => 'required|valid_email'
+                ),
+                array(
+                    'field' => 'name',
+                    'label' => 'Name',
+                    'rules' => 'required|alpha'
+                ),
+                array(
+                    'field' => 'title',
+                    'label' => 'Title',
+                    'rules' => 'required'
+                ),
+                array(
+                    'field' => 'message',
+                    'label' => 'MessageBody',
+                    'rules' => 'required'
+                )
+            )
+        );
+
+        if ($this->form_validation->run() == FALSE)
+        {
+            $this->load->view('myform');
+        }
+        else
+        {
+            $this->load->view('formsuccess');
+        }
+    }
+
+
+    public function gen($str)
     {
         if ($str == 'test')
         {

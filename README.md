@@ -267,6 +267,207 @@ một số thiết lập thường dùng:
     )
 
     
+    
+    
+## "HTML Table Class" là gì ?
+    - HTML Table Class là môt class tiện ích được đưa vào CI, nó support việc tự động sinh ra mã html từ một array hoặc một datasets.
+    - Nó cũng giống như những thư viện khác, về cú pháp, cách khai báo, config...
+    
+    
+    
+## Làm thế nào để sử dụng "HTML Table Class" ?
+
+    - Để sử dụng "HTML Table Class" nói riêng và bất cứ thu viện nào nói chung trong CI thì việc đầu tiên cần phải làm là include (import) thư viện đó vào classs hoặc function cần dùng
+    chú pháp để include vào giống như các thư viện khác:
+    
+    > $this->load->library('table');
+    
+    
+    
+## Một vài ví dụ đơn giản
+    
+    $this->load->library('table');
+    
+    $data = array(
+                 array('Name', 'Color', 'Size'),
+                 array('Fred', 'Blue', 'Small'),
+                 array('Mary', 'Red', 'Large'),
+                 array('John', 'Green', 'Medium')	
+                 );
+    
+    echo $this->table->generate($data);
+    
+    
+    Trong cú pháp của đoạn lênh trên thì không có gì phức tạp, dầu tiên là chúng ta load thư viện "table", bản chất của câu lệnh này là include file có chứa class table vào chỗ cần dùng
+    tiếp theo ta chúng ta có một mảng nhiều chiều, có các giá trị là string.
+    Để tự động sinh ra mã html tương ứng với array thì chúng ta phải dùng đến function generate trong class table
+    cú pháp đơn giản: $this->table->generate($data);
+    đối số truyền vào của function generate là một array và dối số trả về luôn luôn là kiểu string.
+    
+    Mảng dữ liệu ở trên là mảng tĩnh, tức là giá trị đã được thiết lập sẵn, việc thực hiện thao tác gen html từ một bẳng trong db ra cũng vô cùng dễ dàng
+    
+    $this->load->library('table');
+    //Load thư viện
+    $query = $this->db->query("SELECT * FROM my_table");
+    //Lấy dữ liệu từ db
+    echo $this->table->generate($query);
+    
+    Ở ví dụ trên chúng ta thực hiện không khác gì ví dụ đầu có điều dữ liệu ở đây là load từ database ra, lệnh query được thực thi kết quả trả về và được model của CI
+    convert sang dạng array (mảng nhiều chiều)
+    vì thế sau khi kết quả sql trả về thì có thể truyền vào làm tham số trực tiếp luôn, code rất ngắn gọn
+    
+    Thêm một ví dự nữa nhưng chúng ta sẽ set header cho table
+    
+    $this->load->library('table');
+    
+    $this->table->set_heading(array('Name', 'Color', 'Size'));
+    //Đây là đoạn code  thiết lập header cho table, 
+    //mặc định nếu bạn không config thì thì hệ thống sẽ tự cho vào thẻ <th>
+    
+    $this->table->add_row(array('Fred', 'Blue', 'Small'));
+    $this->table->add_row(array('Mary', 'Red', 'Large'));
+    $this->table->add_row(array('John', 'Green', 'Medium'));
+    //Thay vì tạo một array có chứa các phần từ sẵn để add vào thì trong một số trường hợp
+    // chúng ta cần add thêm một số phần tử khác vào chính vì thế function add_row sẽ giúp
+    // chúng ta thao tác dễ dàng đơn giản hơn
+    
+    echo $this->table->generate();
+    //Lệnh in ra mã html đã có dữ liệu
+    
+    
+    * Thay đổi template
+    Trong trường họp bạn không muốn sử dụng nguyên cấu trúc html sinh ra thì bạn có thể thay đổi template của nó,
+    một template bạn tạo ra không bị giới hạn, bạn có thể thêm class, thay tên thẻ... một cách dễ dàng
+    
+    $tmpl = array (
+            'table_open'          => '<table border="0" cellpadding="4" cellspacing="0">',
+            'heading_row_start'   => '<tr>',
+            'heading_row_end'     => '</tr>',
+            'heading_cell_start'  => '<th>',
+            'heading_cell_end'    => '</th>',
+
+            'row_start'           => '<tr>',
+            'row_end'             => '</tr>',
+            'cell_start'          => '<td>',
+            'cell_end'            => '</td>',
+
+            'row_alt_start'       => '<tr>',
+            'row_alt_end'         => '</tr>',
+            'cell_alt_start'      => '<td>',
+            'cell_alt_end'        => '</td>',
+
+            'table_close'         => '</table>'
+      );
+    
+    $this->table->set_template($tmpl);
+    
+    Đoạn code trên đã set một template mới cho table class, tất cả các mã sinh ra sẽ được apply templete mà
+    bạn truyền vào, bạn có thể tùy ý cho các thẻ vào.
+    
+    Chú ý: nếu bạn để ý kĩ thì tại sao template lại có 2 chỗ config <tr><td> điều này khá đơn giản đó là
+    thường dùng để set màu sắc cho các dòng khác xen kẽ nhau.
+    Chúng xin chia sẻ thêm là nếu bạn chỉ muốn thay đổi một phần nhỏ trong teamplate thì thay đổi phần nào 
+    chúng ta sẽ xet lại phần đó chứ không cần thay cả template.
+    VD: muốn thay đổi attribute của table ta chỉ cần
+    
+    $tmpl = array ( 'table_open'  => '<table border="1" cellpadding="2" cellspacing="1" class="mytable">' );
+    $this->table->set_template($tmpl);
+    
+    tương tự cho các thành phần khác.
+    
+    
+## Reference ?
+
+    - $this->table->set_caption()
+    => Dùng để add thêm caption cho table
+    VD: $this->table->set_caption('Colors');
+    
+    
+    - $this->table->set_heading()
+    => Dùng để set header của table, giá trị truyền vào có thể là một mảng hoặc các giá trị đơn
+    VD: $this->table->set_heading('Name', 'Color', 'Size');
+    $this->table->set_heading(array('Name', 'Color', 'Size'));
+    
+    
+    - $this->table->add_row()
+    => Dùng để add thêm một bản ghi vào table, giá trị truyền vào có thể là một mảng hoặc các giá trị đơn
+    VD: $this->table->add_row('Name', 'Color', 'Size');
+    $this->table->add_row(array('Name', 'Color', 'Size'));
+    
+    Trong trường hơp add row thì chúng ta cũng có thể add thêm class, attribute vào row đó luôn
+    $cell = array('data' => 'Blue', 'class' => 'highlight', 'colspan' => 2);
+    $this->table->add_row($cell, 'Red', 'Green');
+    
+    // kết quả như sau: <td class='highlight' colspan='2'>Blue</td><td>Red</td><td>Green</td>
+    
+    
+    - $this->table->set_empty()
+    => Dùng để set giá trị của table về giá trị null
+    VD: $this->table->set_empty("&nbsp;"); //&nbsp; là dấu cách
+    
+    
+    - $this->table->make_columns()
+    => Function này rất hay và rất hữu ích, cũng được sử dụng khá nhiều, mục đích là để gen ra một table mà số column sẽ được bạn config.
+    Giá trị hiển thị ra bẳng có thể nằm ở mảng một chiều mặc dù nó ở nhiều row khác nhau:
+    VD: 
+    $list = array('one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve');
+    
+    $new_list = $this->table->make_columns($list, 3);
+    
+    $this->table->generate($new_list);
+    
+    // Kết quả được sinh ra
+    
+    <table border="0" cellpadding="4" cellspacing="0">
+    <tr>
+    <td>one</td><td>two</td><td>three</td>
+    </tr><tr>
+    <td>four</td><td>five</td><td>six</td>
+    </tr><tr>
+    <td>seven</td><td>eight</td><td>nine</td>
+    </tr><tr>
+    <td>ten</td><td>eleven</td><td>twelve</td></tr>
+    </table>
+    
+    
+    - $this->table->clear();
+    => Bạn muốn gen ra nhiều table nhưng nếu viết liền nhau thì mặc định sẽ tạo ra table cuối cùng, hoặc dữ liệu sẽ bị ghi đè.
+    Clear function sẽ tách rời table ở trên và table ở dưới ra làm nhiều bảng riêng biệt.
+    VD:
+    $this->load->library('table');
+    
+    $this->table->set_heading('Name', 'Color', 'Size');
+    $this->table->add_row('Fred', 'Blue', 'Small');
+    $this->table->add_row('Mary', 'Red', 'Large');
+    $this->table->add_row('John', 'Green', 'Medium');
+    
+    echo $this->table->generate();
+    
+    $this->table->clear();
+    
+    $this->table->set_heading('Name', 'Day', 'Delivery');
+    $this->table->add_row('Fred', 'Wednesday', 'Express');
+    $this->table->add_row('Mary', 'Monday', 'Air');
+    $this->table->add_row('John', 'Saturday', 'Overnight');
+    
+    echo $this->table->generate();
+    
+    - $this->table->function
+    => Đây là một property chứ không phải là function mặc dù tên nó là function.
+    Trong trường hợp dữ liệu cho table là các thẻ thì function sẽ giúp bạn convert dữ liệu sang dạng "html special chars"
+    giúp hiển thị dễ dàng.
+    VD:
+    $this->load->library('table');
+    
+    $this->table->set_heading('Name', 'Color', 'Size');
+    $this->table->add_row('Fred', '<strong>Blue</strong>', 'Small');
+    
+    $this->table->function = 'htmlspecialchars';
+    echo $this->table->generate();
+    
+    //Kết quả
+    <td>Fred</td><td>&lt;strong&gt;Blue&lt;/strong&gt;</td><td>Small</td>
+    
 
 # Ticket 24804: Research for Image Manipulation Of CodeIgniter Framework - Part 1 + Part 2
 
